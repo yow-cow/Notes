@@ -8,14 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var noteApp = NoteViewModel()
+    @State var note = NoteModel(title: "", notesdata: "")
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach($noteApp.notes) { $note in
+                    NavigationLink {
+                        NoteDetail(note: $note)
+                    } label: {
+                        Text(note.title)
+                    }
+                }
+                Section {
+                    NavigationLink {
+                        NoteDetail(note: $note)
+                    } label: {
+                        Text("New Note")
+                            .foregroundColor(Color.gray)
+                            .font(.system(size: 15))
+                    }
+                }
+            }
+            .onAppear {
+                noteApp.fetchData()
+            }
+            .refreshable {
+                noteApp.fetchData()
+            }
         }
-        .padding()
     }
 }
 
